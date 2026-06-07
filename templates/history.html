@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}История проверок{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">История проверок</h4>
+    <a href="/" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>На главную
+    </a>
+</div>
+
+{% if scan_results %}
+<div class="card p-0 overflow-hidden">
+    <table class="table table-hover align-middle mb-0" style="font-size:.9rem">
+        <thead class="table-light">
+            <tr>
+                <th>Файл</th>
+                <th>Дата</th>
+                <th>Категория</th>
+                <th>Находки</th>
+                <th class="text-end">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for r in scan_results %}
+        <tr>
+            <td>
+                {% if r.document %}
+                    <i class="bi bi-file-earmark-text text-muted me-1"></i>{{ r.document.filename }}
+                {% else %}—{% endif %}
+            </td>
+            <td class="text-muted small">{{ r.created_at.strftime("%d.%m.%Y %H:%M") }}</td>
+            <td>
+                {% if r.predicted_type == "защита" %}
+                    <span class="badge badge-confidential">Конфиденциальный</span>
+                {% elif r.predicted_type == "обычный" %}
+                    <span class="badge badge-regular">Обычный</span>
+                {% else %}
+                    <span class="text-muted">—</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if r.emails %}<span class="badge bg-primary me-1">email</span>{% endif %}
+                {% if r.phones %}<span class="badge bg-success me-1">тел.</span>{% endif %}
+                {% if r.cards  %}<span class="badge bg-warning text-dark me-1">карты</span>{% endif %}
+                {% if r.keywords %}<span class="badge bg-danger me-1">слова</span>{% endif %}
+                {% if not r.emails and not r.phones and not r.cards and not r.keywords %}
+                    <span class="text-muted small">ничего</span>
+                {% endif %}
+            </td>
+            <td class="text-end">
+                <a href="/history/{{ r.id }}/view" class="btn btn-sm btn-outline-primary me-1" title="Подробнее">
+                    <i class="bi bi-eye"></i>
+                </a>
+                <a href="/history/{{ r.id }}/download" class="btn btn-sm btn-outline-secondary me-1">
+                    <i class="bi bi-download"></i>
+                </a>
+                <form action="/history/{{ r.id }}/delete" method="post" style="display:inline"
+                      onsubmit="return confirm('Удалить этот отчёт?')">
+                    <button class="btn btn-sm btn-outline-danger" type="submit">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card p-5 text-center text-muted">
+    <i class="bi bi-clock-history" style="font-size:2.5rem"></i>
+    <p class="mt-3 mb-0">История проверок пока пуста.</p>
+</div>
+{% endif %}
+
+{% endblock %}

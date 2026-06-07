@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}DocGuard — Главная{% endblock %}
+
+{% block content %}
+
+<h4 class="fw-bold mb-1">Панель управления</h4>
+<p class="text-muted mb-4">Анализ документов на конфиденциальную информацию</p>
+
+<!-- Статистика -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card stat-total">
+            <div class="stat-num">{{ stats.total }}</div>
+            <div class="stat-label">Всего проверок</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card stat-conf">
+            <div class="stat-num">{{ stats.confidential }}</div>
+            <div class="stat-label">Конфиденциальных</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card stat-reg">
+            <div class="stat-num">{{ stats.regular }}</div>
+            <div class="stat-label">Обычных</div>
+        </div>
+    </div>
+</div>
+
+<!-- Форма загрузки -->
+<div class="card p-4 mb-3">
+    <h5 class="fw-semibold mb-1">Проверить документ</h5>
+    <p class="text-muted small mb-3">
+        Система обнаруживает email-адреса, телефонные номера, номера банковских карт (алгоритм Луна) и ключевые слова.
+    </p>
+
+    <form action="/scan" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label class="form-label fw-medium">Файл для анализа</label>
+            <input id="fileInput" class="form-control" type="file" name="file" accept=".txt,.docx,.pdf" required>
+            <div class="form-text" id="fileHint">Поддерживаются форматы: .txt, .docx, .pdf</div>
+        </div>
+        <button id="submitBtn" class="btn btn-primary px-4" type="submit" disabled>
+            <i class="bi bi-search me-2"></i>Проверить документ
+        </button>
+    </form>
+</div>
+
+<!-- Что ищем -->
+<div class="card p-4">
+    <h6 class="fw-semibold mb-3">Что анализирует система</h6>
+    <div class="row g-3">
+        <div class="col-sm-6 col-lg-3">
+            <div class="d-flex align-items-start gap-2">
+                <i class="bi bi-envelope-fill text-primary mt-1"></i>
+                <div>
+                    <div class="fw-medium small">Email-адреса</div>
+                    <div class="text-muted" style="font-size:.8rem">Любые адреса в тексте</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="d-flex align-items-start gap-2">
+                <i class="bi bi-telephone-fill text-success mt-1"></i>
+                <div>
+                    <div class="fw-medium small">Телефонные номера</div>
+                    <div class="text-muted" style="font-size:.8rem">Форматы +7 и 8</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="d-flex align-items-start gap-2">
+                <i class="bi bi-credit-card-fill text-warning mt-1"></i>
+                <div>
+                    <div class="fw-medium small">Номера карт</div>
+                    <div class="text-muted" style="font-size:.8rem">Алгоритм Луна</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="d-flex align-items-start gap-2">
+                <i class="bi bi-key-fill text-danger mt-1"></i>
+                <div>
+                    <div class="fw-medium small">Ключевые слова</div>
+                    <div class="text-muted" style="font-size:.8rem">пароль, логин и др.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const input = document.getElementById("fileInput");
+const btn   = document.getElementById("submitBtn");
+const hint  = document.getElementById("fileHint");
+input.addEventListener("change", function () {
+    if (input.files.length > 0) {
+        hint.textContent = "Выбран: " + input.files[0].name;
+        btn.disabled = false;
+    }
+});
+</script>
+
+{% endblock %}

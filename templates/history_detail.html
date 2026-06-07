@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Детали проверки{% endblock %}
+
+{% block content %}
+
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a href="/history" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <div>
+        <h4 class="fw-bold mb-0">Детали проверки</h4>
+        <span class="text-muted small">
+            <i class="bi bi-file-earmark-text me-1"></i>
+            {{ document.filename if document else "Неизвестный файл" }}
+            &nbsp;·&nbsp;
+            {{ scan_result.created_at.strftime("%d.%m.%Y %H:%M") }}
+        </span>
+    </div>
+</div>
+
+<!-- Категория -->
+<div class="card p-4 mb-3">
+    <h6 class="fw-semibold mb-3">Классификация</h6>
+    {% if scan_result.predicted_type == "защита" %}
+        <span class="badge badge-confidential fs-6 px-3 py-2">
+            <i class="bi bi-shield-exclamation me-1"></i>КОНФИДЕНЦИАЛЬНЫЙ
+        </span>
+    {% elif scan_result.predicted_type == "обычный" %}
+        <span class="badge badge-regular fs-6 px-3 py-2">
+            <i class="bi bi-shield-check me-1"></i>ОБЫЧНЫЙ
+        </span>
+    {% else %}
+        <span class="text-muted">Не определено</span>
+    {% endif %}
+</div>
+
+<!-- Находки -->
+<div class="row g-3 mb-3">
+
+    <div class="col-md-6">
+        <div class="card p-3 h-100">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-envelope-fill text-primary"></i>
+                <span class="fw-semibold">Email-адреса</span>
+                <span class="badge bg-secondary ms-auto">{{ emails|length }}</span>
+            </div>
+            {% if emails %}
+                <ul class="mb-0 small">
+                    {% for e in emails %}<li class="py-1 border-bottom">{{ e }}</li>{% endfor %}
+                </ul>
+            {% else %}
+                <span class="text-muted small">Не найдено</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card p-3 h-100">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-telephone-fill text-success"></i>
+                <span class="fw-semibold">Телефонные номера</span>
+                <span class="badge bg-secondary ms-auto">{{ phones|length }}</span>
+            </div>
+            {% if phones %}
+                <ul class="mb-0 small">
+                    {% for p in phones %}<li class="py-1 border-bottom">{{ p }}</li>{% endfor %}
+                </ul>
+            {% else %}
+                <span class="text-muted small">Не найдено</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card p-3 h-100">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-credit-card-fill text-warning"></i>
+                <span class="fw-semibold">Номера банковских карт</span>
+                <span class="badge bg-secondary ms-auto">{{ cards|length }}</span>
+            </div>
+            {% if cards %}
+                <ul class="mb-0 small">
+                    {% for c in cards %}<li class="py-1 border-bottom font-monospace">{{ c }}</li>{% endfor %}
+                </ul>
+            {% else %}
+                <span class="text-muted small">Не найдено</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card p-3 h-100">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-key-fill text-danger"></i>
+                <span class="fw-semibold">Ключевые слова</span>
+                <span class="badge bg-secondary ms-auto">{{ keywords|length }}</span>
+            </div>
+            {% if keywords %}
+                <ul class="mb-0 small">
+                    {% for k in keywords %}<li class="py-1 border-bottom">{{ k }}</li>{% endfor %}
+                </ul>
+            {% else %}
+                <span class="text-muted small">Не найдено</span>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<!-- Действия -->
+<div class="d-flex gap-2">
+    <a href="/history/{{ scan_result.id }}/download" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-download me-1"></i>Скачать отчёт
+    </a>
+    <a href="/history" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-clock-history me-1"></i>К истории
+    </a>
+</div>
+
+{% endblock %}

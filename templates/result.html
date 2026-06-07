@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Результат анализа{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-0">Результат анализа</h4>
+        <span class="text-muted small"><i class="bi bi-file-earmark-text me-1"></i>{{ filename }}</span>
+    </div>
+    <a href="/" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>На главную
+    </a>
+</div>
+
+<!-- Классификация -->
+<div class="card p-4 mb-3">
+    <h6 class="fw-semibold mb-3">Классификация документа</h6>
+
+    {% if classification %}
+        {% if classification.predicted_type == "защита" %}
+            <span class="badge badge-confidential fs-6 px-3 py-2">
+                <i class="bi bi-shield-exclamation me-1"></i>КОНФИДЕНЦИАЛЬНЫЙ
+            </span>
+        {% else %}
+            <span class="badge badge-regular fs-6 px-3 py-2">
+                <i class="bi bi-shield-check me-1"></i>ОБЫЧНЫЙ
+            </span>
+        {% endif %}
+
+        {% if classification.probabilities and classification.method == "bayes" %}
+        <div class="mt-3">
+            <div class="small text-muted mb-2">Вероятности (байесовский классификатор):</div>
+            {% for type, prob in classification.probabilities.items() %}
+            <div class="mb-2">
+                <div class="d-flex justify-content-between small mb-1">
+                    <span>{{ type }}</span><span>{{ "%.0f"|format(prob * 100) }}%</span>
+                </div>
+                <div class="progress" style="height:6px">
+                    <div class="progress-bar {% if type == 'защита' %}bg-danger{% else %}bg-success{% endif %}"
+                         style="width: {{ "%.0f"|format(prob * 100) }}%"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if classification.reasons %}
+        <div class="mt-3">
+            <div class="small text-muted mb-1">Основания:</div>
+            <ul class="mb-0 small">
+                {% for reason in classification.reasons %}<li>{{ reason }}</li>{% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+    {% else %}
+        <p class="text-muted mb-0">Недостаточно обучающих данных для классификатора.</p>
+    {% endif %}
+</div>
+
+<!-- Находки -->
+<div class="row g-3">
+
+    <div class="col-md-6">
+        <div class="card p-3 h-100">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-envelope-fill text-primary"></i>
+                <span class="fw-semibold">Email-адреса</span>
+                <span class="badge bg-secondary ms-auto">{{ emails|length }}</span>
+            </div>
+            {% if emails %}
+                <ul class="mb-0 small">{% for e in emails %}<li>{{ e }}</li>{% endfor %}</ul>
+            {% else %}
+                <span class="text-muted small">Не найдено</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card p-3 h-100">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-telephone-fill text-success"></i>
+                <span class="fw-semibold">Телефонные номера</span>
+                <span class="badge bg-secondary ms-auto">{{ phones|length }}</span>
+            </div>
+            {% if phones %}
+                <ul class="mb-0 small">{% for p in phones %}<li>{{ p }}</li>{% endfor %}</ul>
+            {% else %}
+                <span class="text-muted small">Не найдено</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card p-3 h-100">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-credit-card-fill text-warning"></i>
+                <span class="fw-semibold">Номера банковских карт</span>
+                <span class="badge bg-secondary ms-auto">{{ cards|length }}</span>
+            </div>
+            {% if cards %}
+                <ul class="mb-0 small">{% for c in cards %}<li>{{ c }}</li>{% endfor %}</ul>
+            {% else %}
+                <span class="text-muted small">Не найдено</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card p-3 h-100">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-key-fill text-danger"></i>
+                <span class="fw-semibold">Ключевые слова</span>
+                <span class="badge bg-secondary ms-auto">{{ keywords|length }}</span>
+            </div>
+            {% if keywords %}
+                <ul class="mb-0 small">{% for k in keywords %}<li>{{ k }}</li>{% endfor %}</ul>
+            {% else %}
+                <span class="text-muted small">Не найдено</span>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
